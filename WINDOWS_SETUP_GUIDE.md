@@ -199,8 +199,38 @@ application_data_directory=C:\\OpenMRS\\
 auto_update_database=true
 ```
 
-### 🎨 UI Modules
-After initial setup, you may want to install UI modules:
+### 🎨 UI Modules Installation
+
+#### Legacy UI Module (Recommended for Basic Setup)
+The Legacy UI Module provides a traditional web interface for OpenMRS:
+
+1. 🌐 Visit [OpenMRS Add Ons](https://addons.openmrs.org/)
+2. 🔍 Search for "Legacy UI Module" or navigate to featured modules
+3. 📥 Download the latest version (.omod file)
+4. 📂 Place the downloaded file in `~/.OpenMRS/modules/` directory
+5. 🔄 Restart OpenMRS using `mvn jetty:run`
+6. 🌐 Access the UI at `http://localhost:8080/openmrs`
+
+#### O3 Reference Application (Modern React UI)
+For the modern React-based interface, use the OpenMRS SDK:
+
+```cmd
+# Install OpenMRS SDK
+mvn org.openmrs.maven.plugins:openmrs-sdk-maven-plugin:setup-sdk
+
+# Setup O3 Distribution
+mvn openmrs-sdk:setup
+# Choose: Reference Application 3.x
+# Follow prompts for database configuration
+
+# Run O3 instance
+mvn openmrs-sdk:run
+```
+
+**Note**: If SDK setup fails due to repository issues, use the Legacy UI Module as shown above.
+
+#### Additional Modules
+After initial setup, you may want to install additional modules:
 1. 🌐 Visit [OpenMRS Modules](https://addons.openmrs.org/)
 2. 📥 Download desired modules (.omod files)
 3. 📂 Place in `~/.OpenMRS/modules/` directory
