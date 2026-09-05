@@ -1264,7 +1264,9 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<log4jVersion>2.26.1</log4jVersion>
+		<!-- Held below 2.24: that release reworked the log4j-1.2-api bridge and
+		     Log4JCompatibilityTest stops receiving events through it. -->
+		<log4jVersion>2.23.1</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
