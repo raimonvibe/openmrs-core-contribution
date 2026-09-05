@@ -95,7 +95,7 @@
          <plugin>
              <groupId>org.eclipse.jetty</groupId>
              <artifactId>jetty-maven-plugin</artifactId>
-             <version>9.4.35.v20201120</version>
+             <version>9.4.58.v20250814</version>
              <configuration>
                <webApp>
                	  <descriptor>${project.build.directory}/jetty/WEB-INF/web.xml</descriptor>
@@ -232,7 +232,7 @@
 		  <plugin>
               <groupId>org.codehaus.cargo</groupId>
               <artifactId>cargo-maven3-plugin</artifactId>
-              <version>1.10.20</version>
+              <version>1.10.28</version>
               <configuration>
                   <container>
                       <containerId>tomcat9x</containerId>
@@ -333,6 +333,6 @@
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
       <webapp.name>openmrs</webapp.name>
-      <tomcat.version>8.5.2</tomcat.version>
+      <tomcat.version>8.5.100</tomcat.version>
    </properties>
 </project>

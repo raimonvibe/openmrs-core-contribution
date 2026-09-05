@@ -71,6 +71,12 @@ public class OpenmrsTestsTest {
 		for (Class<?> currentClass : classes) {
 			for (Method method : currentClass.getMethods()) {
 				
+				// only enforce the convention on methods we actually declare; test methods inherited from
+				// third-party base classes (e.g. commons-collections' AbstractQueueTest) follow their own naming
+				if (!method.getDeclaringClass().getName().startsWith("org.openmrs.")) {
+					continue;
+				}
+				
 				// make sure every "test" method (determined by having 
 				// the @Test annotation) starts with "testShould"
 				if (method.getAnnotation(Test.class) != null || method.getAnnotation(org.junit.Test.class) != null) {
