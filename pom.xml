@@ -1251,7 +1251,7 @@
 		<springVersion>5.3.39</springVersion>
 		<hibernateVersion>5.6.15.Final</hibernateVersion>
 		<!-- hibernateSearchVersion needs to be adjusted if hibernateVersion changes -->
-		<hibernateSearchVersion>6.2.5.Final</hibernateSearchVersion>
+		<hibernateSearchVersion>8.4.0.Final</hibernateSearchVersion>
 		<luceneVersion>8.11.4</luceneVersion>
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>13.0.22.Final</infinispanVersion>
