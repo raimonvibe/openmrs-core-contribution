@@ -26,6 +26,9 @@ updates:
       prefix: "maven"
       include: "scope"
     ignore:
+      - dependency-name: "org.apache.logging.log4j:*" # 2.23+ reworks the log4j-1.2-api bridge and breaks Log4JCompatibilityTest, see log4jVersion in pom.xml
+        versions:
+          - ">= 2.23"
       - dependency-name: "org.apache.lucene:lucene-queryparser"
         versions:
           - ">= 6.0"
