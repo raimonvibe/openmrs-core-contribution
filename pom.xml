@@ -833,7 +833,7 @@
 					<artifactId>license-maven-plugin</artifactId>
 					<!-- Held at 3.0: 4.x changes license header matching and reports every
 					     existing source file as missing a header. -->
-					<version>3.0</version>
+					<version>5.1.2</version>
 					<configuration>
 						<header>/org/openmrs/license/license-header.txt</header>
 						<includes>
