@@ -6,12 +6,14 @@ on:
   push:
     branches:
       - master
+      - feature/windows-setup-guide
       - 2.4.x
       - 2.5.x
       - 2.6.x
   pull_request:
     branches:
       - master
+      - feature/windows-setup-guide
       - 2.4.x
       - 2.5.x
       - 2.6.x
