@@ -1264,9 +1264,23 @@
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
-		<!-- Held below 2.24: that release reworked the log4j-1.2-api bridge and
-		     Log4JCompatibilityTest stops receiving events through it. -->
-		<log4jVersion>2.23.1</log4jVersion>
+		<!-- Pinned at 2.22.1. Every later release breaks Log4JCompatibilityTest: messages
+		     logged through the org.apache.log4j 1.x bridge never reach the log4j2 appender,
+		     so the test asserts on an empty buffer ("Expected: a value greater than <0>").
+		     Verified on Temurin 17, deterministic, same failure every time:
+
+		         2.22.1  PASS
+		         2.23.1  FAIL
+		         2.24.3  FAIL
+		         2.25.1  FAIL
+		         2.26.1  FAIL
+
+		     Check a candidate in seconds rather than with a full build:
+		         mvn -B -pl api test -Dtest=Log4JCompatibilityTest -Dlog4jVersion=[version]
+		             -Dcheckstyle.skip -Dlicense.skip -Djacoco.skip -Dformatter.skip
+
+		     Dependabot is set to ignore 2.23 and above in .github/dependabot.yml. -->
+		<log4jVersion>2.22.1</log4jVersion>
 		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
