@@ -1259,7 +1259,7 @@
 		<jacksonVersion>2.22.2</jacksonVersion>
 		<!-- jackson-annotations is only re-released when it changes, so it trails jacksonVersion -->
 		<jacksonAnnotationsVersion>2.22</jacksonAnnotationsVersion>
-		<junitVersion>5.14.4</junitVersion>
+		<junitVersion>6.1.3</junitVersion>
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
