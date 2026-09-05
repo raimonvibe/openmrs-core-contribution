@@ -1281,7 +1281,7 @@
 
 		     Dependabot is set to ignore 2.23 and above in .github/dependabot.yml. -->
 		<log4jVersion>2.22.1</log4jVersion>
-		<owaspCsrfGuardVersion>4.2.1</owaspCsrfGuardVersion>
+		<owaspCsrfGuardVersion>4.5.0</owaspCsrfGuardVersion>
 
 		<customArgLineForTesting />
 
