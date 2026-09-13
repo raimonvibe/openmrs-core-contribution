@@ -19,6 +19,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -228,7 +230,7 @@ public class TestInstallUtil {
 	 */
 	protected static boolean testConnection(String urlString) {
 		try {
-			HttpURLConnection urlConnect = (HttpURLConnection) new URL(urlString).openConnection();
+			HttpURLConnection urlConnect = openHttpUrl(urlString);
 			//wait for 15sec
 			urlConnect.setConnectTimeout(15000);
 			urlConnect.setUseCaches(false);
@@ -273,12 +275,39 @@ public class TestInstallUtil {
 	}
 	private static HttpURLConnection createConnection(String url) 
 			throws IOException, MalformedURLException {
-		final HttpURLConnection result = (HttpURLConnection) new URL(url).openConnection();
+		final HttpURLConnection result = openHttpUrl(url);
 		result.setRequestMethod("POST");
 		result.setConnectTimeout(15000);
 		result.setUseCaches(false);
 		result.setDoOutput(true);
 		return result;
+	}
+
+	/**
+	 * Open an HTTP(S) connection to an administrator-supplied install-wizard URL.
+	 * Restricts the scheme, rejects embedded credentials, and does not follow redirects.
+	 */
+	private static HttpURLConnection openHttpUrl(String urlString) throws IOException {
+		final URI uri;
+		try {
+			uri = new URI(urlString);
+		}
+		catch (URISyntaxException e) {
+			throw new IOException("Invalid URL", e);
+		}
+		String scheme = uri.getScheme();
+		if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+			throw new IOException("Only http(s) URLs are allowed");
+		}
+		if (uri.getHost() == null || uri.getHost().isEmpty()) {
+			throw new IOException("URL host is required");
+		}
+		if (uri.getRawUserInfo() != null) {
+			throw new IOException("URL user info is not allowed");
+		}
+		HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+		connection.setInstanceFollowRedirects(false);
+		return connection;
 	}
 	private static String encodeCredentials(String openmrsUsername, String openmrsPassword) {
 		final StringBuilder result = new StringBuilder();

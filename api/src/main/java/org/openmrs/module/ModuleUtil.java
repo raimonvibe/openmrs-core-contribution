@@ -617,10 +617,12 @@ public class ModuleUtil {
 	private static void expand(InputStream input, String fileDir, String name) throws IOException {
 		log.debug("expanding: {}", name);
 
-		File file = new File(fileDir, name);
-
-		if (!file.toPath().normalize().startsWith(fileDir)) {
-			throw new UnsupportedOperationException("Attempted to write file '" + name + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
+		File destDir = new File(fileDir);
+		File file = new File(destDir, name);
+		String destDirPath = destDir.getCanonicalPath();
+		String destFilePath = file.getCanonicalPath();
+		if (!destFilePath.equals(destDirPath) && !destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Attempted to write file '" + name + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
 		}
 		
 		try (FileOutputStream outStream = new FileOutputStream(file)) {

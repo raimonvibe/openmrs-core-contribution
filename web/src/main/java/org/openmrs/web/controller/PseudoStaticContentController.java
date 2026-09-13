@@ -70,6 +70,10 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 		if (interpretJstl) {
 			path += ".withjstl";
 		}
+		if (path.contains("..") || path.contains("://") || path.contains("\\") || !path.startsWith("/")) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
 		
 		return new ModelAndView(path);
 	}
