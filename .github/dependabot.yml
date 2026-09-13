@@ -90,4 +90,10 @@ updates:
       - dependency-name: "org.apache.maven.plugins:maven-antrun-plugin" # 3.2+ CI cannot be validated on this contribution fork
         versions:
           - ">= 3.2.0"
+      - dependency-name: "org.dom4j:dom4j" # 2.2.0 is Java 11 bytecode; this fork still builds on Java 8
+        versions:
+          - ">= 2.2"
+      - dependency-name: "com.h2database:h2" # H2 2.x is a breaking engine major; OpenMRS core stays on 1.4.x
+        versions:
+          - ">= 2.0"
 
