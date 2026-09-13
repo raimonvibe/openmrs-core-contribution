@@ -102,6 +102,25 @@ public class ModuleResourcesServlet extends HttpServlet {
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);
+		try {
+			File allowedRoot;
+			if (devDir != null) {
+				allowedRoot = new File(devDir, "omod/target/classes/web/module/resources");
+			} else {
+				allowedRoot = new File(getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath()
+				        + "/resources");
+			}
+			String rootPath = allowedRoot.getCanonicalPath();
+			String filePath = f.getCanonicalPath();
+			if (!filePath.equals(rootPath) && !filePath.startsWith(rootPath + File.separator)) {
+				log.warn("Rejected module resource path outside the module resources directory: " + filePath);
+				return null;
+			}
+		}
+		catch (IOException e) {
+			log.warn("Unable to resolve module resource path", e);
+			return null;
+		}
 		if (!f.exists()) {
 			log.warn("No file with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			return null;

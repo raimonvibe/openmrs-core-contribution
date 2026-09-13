@@ -69,9 +69,9 @@ updates:
       - dependency-name: "org.liquibase:liquibase-maven-plugin"
         versions:
           - ">= 4.0"
-      - dependency-name: "org.codehaus.groovy:groovy-all" # Groovy 3 is a major language/runtime break; stay on 2.4.x with OpenMRS
+      - dependency-name: "org.codehaus.groovy:groovy-all" # Groovy 2.5+ and 3.x break OpenMRS 2.4.x scripts; stay on 2.4.x
         versions:
-          - ">= 3.0"
+          - ">= 2.5"
       - dependency-name: "junitVersion" # JUnit 6 is a major testing-framework migration OpenMRS has not taken
         versions:
           - ">= 6.0"
