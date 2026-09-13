@@ -1263,7 +1263,7 @@
 		<mockitoVersion>3.12.4</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
-		<slf4jVersion>1.7.36</slf4jVersion>
+		<slf4jVersion>2.0.19</slf4jVersion>
 		<!-- Pinned at 2.22.1. Every later release breaks Log4JCompatibilityTest: messages
 		     logged through the org.apache.log4j 1.x bridge never reach the log4j2 appender,
 		     so the test asserts on an empty buffer ("Expected: a value greater than <0>").
