@@ -12,6 +12,10 @@ updates:
     commit-message:
       prefix: "github-actions"
       include: "scope"
+    ignore:
+      - dependency-name: "actions/setup-java" # v6 removes the adopt distribution used by build-2.x.yaml
+        versions:
+          - ">= 6"
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
@@ -41,6 +45,9 @@ updates:
       - dependency-name: "org.apache.lucene:lucene-analyzers-phonetic"
         versions:
           - ">= 6.0"
+      - dependency-name: "hibernateSearchVersion" # Dependabot tracks the POM property; stay on Search 6.x with current Lucene/Hibernate (OpenMRS upstream ignores hibernate-search >= 6.0)
+        versions:
+          - ">= 7.0"
       - dependency-name: "org.hibernate:hibernate-search-orm" # needs to stay compatible with lucene as detailed at http://hibernate.org/search/releases/
         versions:
           - ">= 6.0"
@@ -62,4 +69,25 @@ updates:
       - dependency-name: "org.liquibase:liquibase-maven-plugin"
         versions:
           - ">= 4.0"
+      - dependency-name: "org.codehaus.groovy:groovy-all" # Groovy 3 is a major language/runtime break; stay on 2.4.x with OpenMRS
+        versions:
+          - ">= 3.0"
+      - dependency-name: "junitVersion" # JUnit 6 is a major testing-framework migration OpenMRS has not taken
+        versions:
+          - ">= 6.0"
+      - dependency-name: "org.junit.jupiter:*"
+        versions:
+          - ">= 6.0"
+      - dependency-name: "ca.uhn.hapi:hapi-structures-v25" # HAPI 2.6 would diverge HL7 parsing from OpenMRS core (pinned at 2.1)
+        versions:
+          - ">= 2.2"
+      - dependency-name: "com.mycila:license-maven-plugin" # Plugin 4/5 change config/API; OpenMRS still pins 3.x
+        versions:
+          - ">= 4.0"
+      - dependency-name: "org.apache.maven.plugins:maven-surefire-plugin" # 3.6+ CI cannot be validated on this contribution fork
+        versions:
+          - ">= 3.6.0"
+      - dependency-name: "org.apache.maven.plugins:maven-antrun-plugin" # 3.2+ CI cannot be validated on this contribution fork
+        versions:
+          - ">= 3.2.0"
 
