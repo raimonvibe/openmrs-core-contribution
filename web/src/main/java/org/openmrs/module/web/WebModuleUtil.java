@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,6 +104,20 @@ public class WebModuleUtil {
 	private static StaticDispatcherServlet staticDispatcherServlet = null;
 	
 	/**
+	 * Keep module-extracted files inside the web application root. Normalize before the prefix
+	 * check so archive entries that contain {@code ..} cannot write outside {@code webRoot}.
+	 */
+	static File checkedWebExtractFile(File webRoot, File outFile, String entryName) throws IOException {
+		Path webRootPath = webRoot.toPath().toAbsolutePath().normalize();
+		Path outFilePath = outFile.toPath().toAbsolutePath().normalize();
+		if (!outFilePath.startsWith(webRootPath)) {
+			throw new IOException("Attempted to write file '" + entryName
+			        + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
+		}
+		return outFilePath.toFile();
+	}
+	
+	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
 	 * {@link ModuleFactory#startModule(Module)} If delayContextRefresh is true, the spring context
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
@@ -180,11 +195,12 @@ public class WebModuleUtil {
 						// get the output file
 						File outFile = new File(absPath.toString().replace("/", File.separator));
 						File webRoot = new File(realPath);
-						String webRootPath = webRoot.getCanonicalPath();
-						String outFilePath = outFile.getCanonicalPath();
-						if (!outFilePath.equals(webRootPath) && !outFilePath.startsWith(webRootPath + File.separator)) {
+						Path webRootPath = webRoot.toPath().toAbsolutePath().normalize();
+						Path outFilePath = outFile.toPath().toAbsolutePath().normalize();
+						if (!outFilePath.startsWith(webRootPath)) {
 							throw new IOException("Attempted to write file '" + name + "' rejected as it attempts to write outside the chosen directory. This may be the result of a zip-slip style attack.");
 						}
+						outFile = outFilePath.toFile();
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();

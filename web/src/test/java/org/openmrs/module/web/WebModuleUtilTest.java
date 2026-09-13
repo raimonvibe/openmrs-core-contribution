@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -332,6 +333,27 @@ public class WebModuleUtilTest {
 		return doc;
 	}
 	
+	@Test
+	public void checkedWebExtractFile_shouldRejectPathsOutsideTheWebRoot() throws IOException {
+		File webRoot = Paths.get(System.getProperty("java.io.tmpdir"), "openmrs-webroot").toFile();
+		webRoot.mkdirs();
+		File escape = new File(webRoot, "../../etc/passwd");
+
+		IOException thrown = assertThrows(IOException.class,
+		    () -> WebModuleUtil.checkedWebExtractFile(webRoot, escape, "web/module/../../etc/passwd"));
+		assertTrue(thrown.getMessage().contains("zip-slip"));
+	}
+
+	@Test
+	public void checkedWebExtractFile_shouldAllowPathsInsideTheWebRoot() throws IOException {
+		File webRoot = Paths.get(System.getProperty("java.io.tmpdir"), "openmrs-webroot").toFile();
+		webRoot.mkdirs();
+		File nested = new File(webRoot, "WEB-INF/view/module/demo/index.jsp");
+
+		File safe = WebModuleUtil.checkedWebExtractFile(webRoot, nested, "web/module/index.jsp");
+		assertTrue(safe.getCanonicalPath().startsWith(webRoot.getCanonicalPath()));
+	}
+
 	/**
 	 * @see WebModuleUtil#getModuleWebFolder(String)
 	 */

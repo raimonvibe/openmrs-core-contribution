@@ -18,16 +18,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Enumeration;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,6 +55,12 @@ public class TestInstallUtil {
 	}
 	
 	private static final Logger log = LoggerFactory.getLogger(TestInstallUtil.class);
+
+	/**
+	 * Install-wizard remote URLs must be http(s) with a host and no embedded credentials.
+	 */
+	private static final Pattern INSTALL_WIZARD_URL = Pattern.compile(
+	        "^https?://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::\\d{1,5})?(?:[/?#].*)?$");
 	
 	/**
 	 * Adds data to the test database from a sql dump file
@@ -285,9 +293,13 @@ public class TestInstallUtil {
 
 	/**
 	 * Open an HTTP(S) connection to an administrator-supplied install-wizard URL.
-	 * Restricts the scheme, rejects embedded credentials, and does not follow redirects.
+	 * Restricts the scheme, rejects embedded credentials and non-routable targets,
+	 * and does not follow redirects.
 	 */
-	private static HttpURLConnection openHttpUrl(String urlString) throws IOException {
+	static HttpURLConnection openHttpUrl(String urlString) throws IOException {
+		if (urlString == null || !INSTALL_WIZARD_URL.matcher(urlString).matches()) {
+			throw new IOException("Only http(s) URLs with a host are allowed");
+		}
 		final URI uri;
 		try {
 			uri = new URI(urlString);
@@ -295,19 +307,34 @@ public class TestInstallUtil {
 		catch (URISyntaxException e) {
 			throw new IOException("Invalid URL", e);
 		}
-		String scheme = uri.getScheme();
-		if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-			throw new IOException("Only http(s) URLs are allowed");
-		}
-		if (uri.getHost() == null || uri.getHost().isEmpty()) {
-			throw new IOException("URL host is required");
-		}
 		if (uri.getRawUserInfo() != null) {
 			throw new IOException("URL user info is not allowed");
 		}
+		rejectInternalHost(uri.getHost());
 		HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
 		connection.setInstanceFollowRedirects(false);
 		return connection;
+	}
+
+	/**
+	 * Block loopback, link-local (including cloud metadata), wildcard, and multicast
+	 * addresses after DNS resolution. Site-local LAN hosts stay allowed so a hospital
+	 * install can still clone from another OpenMRS on the same network.
+	 */
+	static void rejectInternalHost(String host) throws IOException {
+		final InetAddress[] addresses;
+		try {
+			addresses = InetAddress.getAllByName(host);
+		}
+		catch (UnknownHostException e) {
+			throw new IOException("Unable to resolve URL host", e);
+		}
+		for (InetAddress address : addresses) {
+			if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isLinkLocalAddress()
+			        || address.isMulticastAddress()) {
+				throw new IOException("Requests to internal or non-routable addresses are not allowed");
+			}
+		}
 	}
 	private static String encodeCredentials(String openmrsUsername, String openmrsPassword) {
 		final StringBuilder result = new StringBuilder();
