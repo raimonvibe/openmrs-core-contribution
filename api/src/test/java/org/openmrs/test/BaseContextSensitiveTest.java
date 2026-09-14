@@ -315,7 +315,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000";
+			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;NON_KEYWORDS=VALUE,KEY,USER";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -834,7 +834,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		IDatabaseConnection dbUnitConn = useInMemoryDatabase()
+			? new DatabaseConnection(connection, "PUBLIC")
+			: new DatabaseConnection(connection);
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
@@ -866,9 +868,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			IDatabaseConnection dbUnitConn = setupDatabaseConnection(connection);
 			
 			// find all the tables for this connection
-			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", null);
+			ResultSet resultSet = connection.getMetaData().getTables(System.getProperty("databaseName"), "PUBLIC", "%", new String[] {"TABLE"});
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
+				String schemaName = resultSet.getString("TABLE_SCHEM");
+				if (schemaName != null && "INFORMATION_SCHEMA".equalsIgnoreCase(schemaName)) {
+					continue;
+				}
 				String tableName = resultSet.getString(3);
 				dataset.addTable(new DefaultTable(tableName));
 			}

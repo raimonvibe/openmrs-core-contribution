@@ -317,7 +317,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE";
+			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE;NON_KEYWORDS=VALUE,KEY,USER";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -851,7 +851,9 @@ public abstract class BaseContextSensitiveTest {
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		IDatabaseConnection dbUnitConn = useInMemoryDatabase()
+			? new DatabaseConnection(connection, "PUBLIC")
+			: new DatabaseConnection(connection);
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
@@ -888,6 +890,10 @@ public abstract class BaseContextSensitiveTest {
 			ResultSet resultSet = connection.getMetaData().getTables(databaseName, getSchemaPattern(), "%", new String[] {"TABLE"});
 			DefaultDataSet dataset = new DefaultDataSet();
 			while (resultSet.next()) {
+				String schemaName = resultSet.getString("TABLE_SCHEM");
+				if (schemaName != null && "INFORMATION_SCHEMA".equalsIgnoreCase(schemaName)) {
+					continue;
+				}
 				String tableName = resultSet.getString(3);
 				dataset.addTable(new DefaultTable(tableName));
 			}
