@@ -267,7 +267,9 @@
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>4.33.0</version>
+				<!-- 4.33 changes valueDate checksums (liquibase#7100/#7193) and
+				     fails Database1_9_7UpgradeIT against existing DATABASECHANGELOG rows. -->
+				<version>4.32.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>ch.qos.logback</groupId>
