@@ -104,7 +104,7 @@ public class DatabaseUpgradeTestUtil {
 		
 		String databaseUrl = tempDir.getAbsolutePath().replace("\\", "/") + "/openmrs";
 		
-		connectionUrl = "jdbc:h2:" + databaseUrl + ";AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1";
+		connectionUrl = "jdbc:h2:" + databaseUrl + ";MODE=LEGACY;AUTO_RECONNECT=TRUE;DB_CLOSE_DELAY=-1;NON_KEYWORDS=VALUE,KEY,USER";
 		
 		connection = DriverManager.getConnection(connectionUrl, "sa", "sa");
 		connection.setAutoCommit(true);
