@@ -315,7 +315,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;NON_KEYWORDS=VALUE,KEY,USER";
+			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=30;LOCK_TIMEOUT=10000;CASE_INSENSITIVE_IDENTIFIERS=TRUE;NON_KEYWORDS=VALUE,KEY,USER";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -842,6 +842,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			config.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
 		}
 		else {
 			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
