@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
@@ -68,17 +67,16 @@ public class StreamDataService {
 		@Override
 		public int read() throws IOException {
 			try {
-				if (streamException != null) {
-					// Rethrow exception if writer failed.
-					throw streamException;
-				}
+				throwIfWriterFailed();
 				
 				Integer peek = this.blockingQueue.peek();
 				if (Integer.valueOf(-1).equals(peek)) {
+					throwIfWriterFailed();
 					return -1;
 				}
 
 				Integer value = this.blockingQueue.poll(this.timeoutNanos, TimeUnit.NANOSECONDS);
+				throwIfWriterFailed();
 				if (value == null) {
 					// Timeout
 					return -1;
@@ -98,14 +96,21 @@ public class StreamDataService {
 			}
 		}
 
+		private void throwIfWriterFailed() throws IOException {
+			if (streamException != null) {
+				throw streamException;
+			}
+		}
+
 		/**
 		 * Propagate exception from a writing thread to a reading thread so that processing is stopped.
 		 * 
 		 * @param streamException exception
-		 * @throws UncheckedIOException rethrows e
 		 */
 		public void propagateStreamException(IOException streamException) {
 			this.streamException = streamException;
+			// Wake a reader blocked in poll() so it can observe the exception.
+			this.blockingQueue.offer(-1);
 		}
 	}
 	
@@ -183,10 +188,14 @@ public class StreamDataService {
 			QueueInputStream in = new QueueInputStream();
 
 			taskExecutor.execute(() -> {
-				try (QueueOutputStream out = in.newQueueOutputStream()) {
+				QueueOutputStream out = in.newQueueOutputStream();
+				try {
 					writer.write(out);
+					out.close();
 				} catch (Exception e) {
 					log.error("Failed to write data in parallel", e);
+					// Do not close the output stream here: close() writes EOF and Files.copy
+					// can finish successfully before the reader sees the writer failure.
 					in.propagateStreamException(new IOException("Failed to write data in parallel", e));
 				}
 			});
