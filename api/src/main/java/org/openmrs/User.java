@@ -19,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
@@ -109,7 +110,8 @@ public class User extends BaseOpenmrsObject implements java.io.Serializable, Att
 	@ElementCollection
 	@CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id", nullable = false))
 	@MapKeyColumn(name = "property", length = 255)
-	@Column(name = "property_value", length = Integer.MAX_VALUE)
+	@Lob
+	@Column(name = "property_value")
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.EVICT })
 	@NotAudited
 	private Map<String, String> userProperties;

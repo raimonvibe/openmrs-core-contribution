@@ -59,7 +59,7 @@ import org.dbunit.dataset.stream.StreamingDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlProducer;
 import org.dbunit.dataset.xml.XmlDataSet;
-import org.dbunit.ext.h2.H2DataTypeFactory;
+import org.dbunit.ext.h2.H2Connection;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
@@ -834,21 +834,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
-		IDatabaseConnection dbUnitConn = useInMemoryDatabase()
-			? new DatabaseConnection(connection, "PUBLIC", false)
-			: new DatabaseConnection(connection);
-		DatabaseConfig config = dbUnitConn.getConfig();
-		
 		if (useInMemoryDatabase()) {
-			//Setup the db connection to use H2 config.
-			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			// H2 2.x reports user tables as BASE TABLE, so dbunit's default {"TABLE"}
+			// filter misses field_type and friends. H2Connection also installs the
+			// H2 metadata handler that drops INFORMATION_SCHEMA from listings.
+			IDatabaseConnection dbUnitConn = new H2Connection(connection, "PUBLIC");
+			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
 			config.setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, false);
-		}
-		else {
-			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
+			config.setProperty(DatabaseConfig.PROPERTY_TABLE_TYPE, new String[] { "TABLE", "BASE TABLE" });
+			return dbUnitConn;
 		}
 		
+		IDatabaseConnection dbUnitConn = new DatabaseConnection(connection);
+		dbUnitConn.getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
 		return dbUnitConn;
 	}
 	

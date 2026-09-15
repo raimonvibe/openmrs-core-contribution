@@ -35,7 +35,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.ext.h2.H2DataTypeFactory;
+import org.dbunit.ext.h2.H2Connection;
 import org.dbunit.operation.DatabaseOperation;
 
 import liquibase.Liquibase;
@@ -123,8 +123,10 @@ public class DatabaseUpgradeTestUtil {
 		}
 		
 		try {
-			dbUnitConnection = new DatabaseConnection(connection);
-			dbUnitConnection.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			dbUnitConnection = new H2Connection(connection, "PUBLIC");
+			dbUnitConnection.getConfig().setProperty(DatabaseConfig.PROPERTY_TABLE_TYPE,
+			    new String[] { "TABLE", "BASE TABLE" });
+			dbUnitConnection.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
 		}
 		catch (DatabaseUnitException e) {
 			tempDir.delete();
