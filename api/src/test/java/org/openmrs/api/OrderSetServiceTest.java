@@ -131,7 +131,7 @@ public class OrderSetServiceTest extends BaseContextSensitiveTest {
 		for (OrderSet oS : orderSets) {
 			numberOfOrderSetMembers = numberOfOrderSetMembers + oS.getOrderSetMembers().size();
 		}
-		assertEquals(new Integer(4), numberOfOrderSetMembers);
+		assertEquals(Integer.valueOf(4), numberOfOrderSetMembers);
 	}
 	
 	@Test

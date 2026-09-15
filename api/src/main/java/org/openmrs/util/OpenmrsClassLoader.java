@@ -428,6 +428,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		return threadToReturn;
 	}
 	
+	@SuppressWarnings("removal")
 	public static void onShutdown() {
 		
 		//Since we are shutting down, stop all threads that reference the openmrs class loader.

@@ -735,7 +735,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	@Test
 	public void getMaxConceptId_shouldGiveTheMaximumConceptId() {
 		int maxConceptId = 5497;
-		assertEquals(new Integer(maxConceptId), conceptService.getMaxConceptId());
+		assertEquals(Integer.valueOf(maxConceptId), conceptService.getMaxConceptId());
 	}
 	
 	/**
@@ -873,7 +873,7 @@ public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	public void getCountOfDrugs_shouldReturnTheTotalNumberOfMatchingNumbers() {
 		String phrase = "Triomune-30";
 		int conceptId = 792;
-		assertEquals(new Integer(1),
+		assertEquals(Integer.valueOf(1),
 		    conceptService.getCountOfDrugs(phrase, conceptService.getConcept(conceptId), true, true, true));
 	}
 

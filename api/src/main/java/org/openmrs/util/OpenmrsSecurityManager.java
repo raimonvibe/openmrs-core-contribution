@@ -16,6 +16,7 @@ import org.openmrs.api.APIException;
  *
  * @see SecurityManager
  */
+@SuppressWarnings("removal")
 public class OpenmrsSecurityManager extends SecurityManager {
 	
 	/**

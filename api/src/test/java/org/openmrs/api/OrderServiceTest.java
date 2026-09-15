@@ -2240,7 +2240,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldReturnOrdersWithFulfillerStatusReceivedOrNull() {
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setFulfillerStatus(Order.FulfillerStatus.valueOf("RECEIVED")).setIncludeNullFulfillerStatus(new Boolean(true)).build();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setFulfillerStatus(Order.FulfillerStatus.valueOf("RECEIVED")).setIncludeNullFulfillerStatus(Boolean.TRUE).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(12, orders.size());
 		for (Order order : orders) {
@@ -2254,7 +2254,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldReturnOrdersWithFulfillerStatusNotNull() {
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeNullFulfillerStatus(new Boolean(false)).build();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeNullFulfillerStatus(Boolean.FALSE).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(3, orders.size());
 		for (Order order : orders) {
@@ -2267,7 +2267,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void getOrders_shouldReturnOrdersWithFulfillerStatusNull() {
-		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeNullFulfillerStatus(new Boolean(true)).build();
+		OrderSearchCriteria orderSearchCriteria = new OrderSearchCriteriaBuilder().setIncludeNullFulfillerStatus(Boolean.TRUE).build();
 		List<Order> orders = orderService.getOrders(orderSearchCriteria);
 		assertEquals(10, orders.size());
 		for (Order order : orders) {

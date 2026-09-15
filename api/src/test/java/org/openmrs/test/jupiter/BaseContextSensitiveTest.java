@@ -66,7 +66,7 @@ import org.dbunit.ext.h2.H2Connection;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.H2Dialect;
+import org.openmrs.test.OpenmrsH2Dialect;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -316,8 +316,8 @@ public abstract class BaseContextSensitiveTest {
 		// connection properties here to override what is in the runtime
 		// properties
 		if (useInMemoryDatabase()) {
-			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;NON_KEYWORDS=VALUE,KEY,USER,TYPE,FIELD";
+			runtimeProperties.setProperty(Environment.DIALECT, OpenmrsH2Dialect.class.getName());
+			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;NON_KEYWORDS=VALUE,KEY,USER,TYPE,FIELD";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");

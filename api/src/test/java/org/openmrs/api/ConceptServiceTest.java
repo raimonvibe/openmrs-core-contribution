@@ -2133,7 +2133,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
                 .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
         // "now matches both concept names "TRUST NOW" and "TRUST NOWHERE", but these are for the same concept (4000), so there should only be one item in the result set
         assertEquals(1, searchResults.size());
-        assertEquals(new Integer(4000), searchResults.get(0).getConcept().getId());
+        assertEquals(Integer.valueOf(4000), searchResults.get(0).getConcept().getId());
 	}
 
 	/**

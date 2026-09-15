@@ -892,7 +892,7 @@ public class ObsTest {
         obs.setAccessionNumber("4849RDD");          
         obs.setValueCoded(new Concept());                  
         obs.setValueDrug(new Drug());                      
-        obs.setValueGroupId(new  Integer(23));
+        obs.setValueGroupId(Integer.valueOf(23));
         obs.setValueDatetime(new Date());
         obs.setValueModifier("djfsihdihd");              
         obs.setValueText("xyzABC");

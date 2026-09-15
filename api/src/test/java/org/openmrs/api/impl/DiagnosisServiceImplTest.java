@@ -108,7 +108,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(encounter, savedDiagnosis.getEncounter());
 		assertEquals(patient, savedDiagnosis.getPatient());
 		assertEquals(ConditionVerificationStatus.CONFIRMED, savedDiagnosis.getCertainty());
-		assertEquals(new Integer(2), savedDiagnosis.getRank());
+		assertEquals(Integer.valueOf(2), savedDiagnosis.getRank());
 		assertEquals(NAMESPACE + "^" + FORMFIELD_PATH, savedDiagnosis.getFormNamespaceAndPath());
 	}
 
@@ -144,7 +144,7 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		assertEquals(1, diagnoses.size());
 		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
 		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
-		assertEquals(new Integer(1), diagnoses.get(0).getDiagnosisId());
+		assertEquals(Integer.valueOf(1), diagnoses.get(0).getDiagnosisId());
 	}
 
 	/**
@@ -195,8 +195,8 @@ public class DiagnosisServiceImplTest extends BaseContextSensitiveTest {
 		
 		assertEquals("68802cce-6880-17e4-6880-a68804d22fb7", diagnoses.get(0).getUuid());
 		assertEquals(ConditionVerificationStatus.CONFIRMED, diagnoses.get(0).getCertainty());
-		assertEquals(new Integer(1), diagnoses.get(0).getDiagnosisId());
-		assertEquals(new Integer(2), diagnoses.get(0).getPatient().getPatientId());
+		assertEquals(Integer.valueOf(1), diagnoses.get(0).getDiagnosisId());
+		assertEquals(Integer.valueOf(2), diagnoses.get(0).getPatient().getPatientId());
 		assertEquals(1, diagnoses.size());
 	}
 
