@@ -317,7 +317,7 @@ public abstract class BaseContextSensitiveTest {
 		// properties
 		if (useInMemoryDatabase()) {
 			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
-			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE;NON_KEYWORDS=VALUE,KEY,USER";
+			String url = "jdbc:h2:mem:openmrs;MODE=LEGACY;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000;IGNORECASE=TRUE;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;NON_KEYWORDS=VALUE,KEY,USER,TYPE,FIELD";
 			runtimeProperties.setProperty(Environment.URL, url);
 			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
@@ -852,13 +852,15 @@ public abstract class BaseContextSensitiveTest {
 	
 	protected IDatabaseConnection setupDatabaseConnection(Connection connection) throws DatabaseUnitException {
 		IDatabaseConnection dbUnitConn = useInMemoryDatabase()
-			? new DatabaseConnection(connection, "PUBLIC")
+			? new DatabaseConnection(connection, "PUBLIC", false)
 			: new DatabaseConnection(connection);
 		DatabaseConfig config = dbUnitConn.getConfig();
 		
 		if (useInMemoryDatabase()) {
 			//Setup the db connection to use H2 config.
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new H2DataTypeFactory());
+			config.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
+			config.setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, false);
 		}
 		else {
 			config.setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new OpenmrsMetadataHandler());
