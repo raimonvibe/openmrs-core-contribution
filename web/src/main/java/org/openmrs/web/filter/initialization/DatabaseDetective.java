@@ -53,6 +53,12 @@ public class DatabaseDetective {
 			ResultSet tbls = dbMetaData.getTables(null, null, null, types);
 			
 			while (tbls.next()) {
+				// H2 2 lists INFORMATION_SCHEMA BASE TABLEs even on an empty database.
+				String schemaName = tbls.getString("TABLE_SCHEM");
+				if (schemaName != null
+				        && ("INFORMATION_SCHEMA".equalsIgnoreCase(schemaName) || "PG_CATALOG".equalsIgnoreCase(schemaName))) {
+					continue;
+				}
 				String tableName = tbls.getString("TABLE_NAME");
 				//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
 				if (!("liquibasechangelog".equals(tableName.toLowerCase()))
