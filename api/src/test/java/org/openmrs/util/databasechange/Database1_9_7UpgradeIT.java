@@ -56,7 +56,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 	
 	public static final String STANDARD_TEST_1_9_7_DATASET = TEST_DATA_DIR + "standardTest-1.9.7-dataSet.xml";
 	
-	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.h2.db";
+	public final static String DATABASE_PATH = TEST_DATA_DIR + "openmrs-1.9.7.mv.db";
 	
 	public static final String LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-update-to-latest-from-1.9.x.xml";
 	
@@ -384,7 +384,7 @@ public class Database1_9_7UpgradeIT extends BaseContextSensitiveTest {
 		upgradeTestUtil.executeDataset("UpgradeTest-otherOrderTypes.xml");
 		upgradeTestUtil.getConnection().createStatement()
 		        .executeUpdate("alter table `order_type` add java_class_name varchar(255) default 'org.openmrs.Order'");
-		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int(11)");
+		upgradeTestUtil.getConnection().createStatement().executeUpdate("alter table `order_type` add parent int");
 		createOrderEntryUpgradeFileWithTestData(
 		    "mg=111\ntab(s)=112\n1/day\\ x\\ 7\\ days/week=113\n2/day\\ x\\ 7\\ days/week=114");
 		

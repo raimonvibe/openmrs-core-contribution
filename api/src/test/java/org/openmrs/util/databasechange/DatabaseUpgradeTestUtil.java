@@ -19,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +73,7 @@ public class DatabaseUpgradeTestUtil {
 		tempDir.mkdir();
 		tempDir.deleteOnExit();
 		
-		tempDBFile = new File(tempDir, "openmrs.h2.db");
+		tempDBFile = new File(tempDir, "openmrs.mv.db");
 		tempDBFile.delete();
 		try {
 			tempDBFile.createNewFile();
@@ -134,6 +135,45 @@ public class DatabaseUpgradeTestUtil {
 			
 			throw new SQLException(e);
 		}
+		
+		restartSequences();
+	}
+	
+	/**
+	 * H2 2 does not advance {@code NEXT VALUE FOR} sequences when rows are inserted with explicit
+	 * ids, so later generated inserts reuse existing primary keys. Restart each sequence past the
+	 * current maximum.
+	 */
+	private void restartSequences() throws SQLException {
+		List<String[]> columns = new ArrayList<>();
+		try (PreparedStatement query = connection.prepareStatement(
+		        "SELECT TABLE_NAME, COLUMN_NAME, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS "
+		                + "WHERE TABLE_SCHEMA = 'PUBLIC' AND COLUMN_DEFAULT LIKE 'NEXT VALUE FOR%'")) {
+			try (ResultSet resultSet = query.executeQuery()) {
+				while (resultSet.next()) {
+					columns.add(new String[] { resultSet.getString(1), resultSet.getString(2), resultSet.getString(3) });
+				}
+			}
+		}
+		
+		try (Statement statement = connection.createStatement()) {
+			for (String[] column : columns) {
+				long nextValue = 1L;
+				try (ResultSet max = statement
+				        .executeQuery("SELECT COALESCE(MAX(\"" + column[1] + "\"), 0) FROM \"" + column[0] + "\"")) {
+					if (max.next()) {
+						nextValue = max.getLong(1) + 1L;
+					}
+				}
+				String columnDefault = column[2];
+				int sequenceStart = columnDefault.lastIndexOf('.');
+				if (sequenceStart < 0) {
+					continue;
+				}
+				String sequenceName = columnDefault.substring(sequenceStart + 1).replace("\"", "").trim();
+				statement.execute("ALTER SEQUENCE IF EXISTS \"" + sequenceName + "\" RESTART WITH " + nextValue);
+			}
+		}
 	}
 	
 	public void close() throws SQLException {
@@ -171,6 +211,7 @@ public class DatabaseUpgradeTestUtil {
 			DatabaseOperation.REFRESH.execute(dbUnitConnection, replacementDataSet);
 			
 			connection.commit();
+			restartSequences();
 		}
 		catch (DatabaseUnitException e) {
 			throw new IOException(e);
