@@ -13,24 +13,22 @@ on:
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
-  scan-pr:
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0
-    with:
-      upload-sarif: false
+  scan:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-  scan-scheduled:
-    if: github.event_name != 'pull_request' && github.event_name != 'merge_group'
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0
-    with:
-      fail-on-vuln: false
-      upload-sarif: false
-    permissions:
-      contents: read
-      actions: read
+      - name: Run OSV-Scanner
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@7f58dd6750d78fc29a900ba64b1a0f946f62fba4 # v2.6.0
+        with:
+          scan-args: |-
+            --recursive
+            ./
