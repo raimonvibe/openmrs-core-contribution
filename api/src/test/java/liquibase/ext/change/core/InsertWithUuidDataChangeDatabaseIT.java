@@ -59,7 +59,8 @@ public class InsertWithUuidDataChangeDatabaseIT extends DatabaseIT {
 			
 			ResultSet resultSet = statement.getResultSet();
 			while (resultSet.next()) {
-				result.put(resultSet.getString(1), resultSet.getString(2));
+				String uuid = resultSet.getString(2);
+				result.put(resultSet.getString(1), uuid != null ? uuid.trim() : null);
 			}
 			
 			return result;

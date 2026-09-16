@@ -55,7 +55,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		StringBuilder query = new StringBuilder();
 		query.append(" select 	s.concept_id, min(n.name) as name ");
 		query.append(" from 	program_workflow_state s, concept_name n ");
-		query.append(" where 	s.concept_id = n.concept_id and initial = '1' and terminal = '1' ");
+		query.append(" where 	s.concept_id = n.concept_id and initial = true and terminal = true ");
 		query.append(" group by s.concept_id ");
 		List<List<Object>> results = DatabaseUtil.executeSQL(conn, query.toString(), true);
 		if (results.isEmpty()) {
@@ -81,7 +81,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		}
 		for (List<Object> row : results) {
 			Integer conceptId = Integer.valueOf(row.get(0).toString());
-			boolean isInitial = "1".equals(row.get(1).toString());
+			boolean isInitial = isSqlTrue(row.get(1));
 			int num = Integer.parseInt(row.get(2).toString());
 			if (isInitial && num > 0) {
 				missingInitial.remove(conceptId);
@@ -99,6 +99,23 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		messages.add(message.toString());
 		
 		DatabaseUpdater.reportUpdateWarnings(messages);
+	}
+	
+	/**
+	 * H2 2 uses BOOLEAN; MySQL uses TINYINT. JDBC may return Boolean, Number, "1", or "true".
+	 */
+	private static boolean isSqlTrue(Object value) {
+		if (value == null) {
+			return false;
+		}
+		if (value instanceof Boolean) {
+			return (Boolean) value;
+		}
+		if (value instanceof Number) {
+			return ((Number) value).intValue() != 0;
+		}
+		String text = value.toString();
+		return "1".equals(text) || "true".equalsIgnoreCase(text);
 	}
 	
 	/**

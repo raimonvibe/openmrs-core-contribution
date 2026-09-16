@@ -25,9 +25,10 @@ public class H2LessStrictDialect extends H2Dialect {
 		//
 		registerColumnType(Types.BIGINT, "integer");
 		
-		// Liquibase incorrectly creates varchar for clob in H2 so we just tell Hibernate it's ok
+		// H2 2 reports CLOB/TEXT as CHARACTER LARGE OBJECT; Hibernate 5 still emits LONGVARCHAR/clob.
 		//
-		registerColumnType(Types.CLOB, "varchar");
+		registerColumnType(Types.CLOB, "character large object");
+		registerColumnType(Types.LONGVARCHAR, "character large object");
 		
 		// H2 maps 'FLOAT' to 'double' as per http://www.h2database.com/html/datatypes.html#double_type
 		//
@@ -42,19 +43,53 @@ public class H2LessStrictDialect extends H2Dialect {
 		//
 		registerColumnType(Types.TIMESTAMP, "date");
 		
-		// UUIDs are created as char(38), but H2Dialect maps them to varchars
+		// UUIDs are created as char(38). H2 2 reports that JDBC type as CHARACTER, not CHAR.
 		//
-		registerColumnType(Types.VARCHAR, 38, "char($1)");
+		registerColumnType(Types.CHAR, "character");
+		registerColumnType(Types.VARCHAR, 38, "character");
 		
 		// These mappings are required for "long" fields of type java.lang.String that are declared as 'text' 
 		// in Hibernate change sets.
 		//
-		registerColumnType(Types.VARCHAR, 250, "clob");
-		registerColumnType(Types.VARCHAR, 500, "clob");
-		registerColumnType(Types.VARCHAR, 1024, "clob");
-		registerColumnType(Types.VARCHAR, 65535, "clob");
-		registerColumnType(Types.VARCHAR, 16777215, "clob");
-		registerColumnType(Types.VARCHAR, 2147483647, "clob");
-		registerColumnType(Types.LONGVARCHAR, 2147483647, "clob");
+		registerColumnType(Types.VARCHAR, 250, "character large object");
+		registerColumnType(Types.VARCHAR, 500, "character large object");
+		registerColumnType(Types.VARCHAR, 1024, "character large object");
+		registerColumnType(Types.VARCHAR, 65535, "character large object");
+		registerColumnType(Types.VARCHAR, 16777215, "character large object");
+		registerColumnType(Types.VARCHAR, 2147483647, "character large object");
+		registerColumnType(Types.LONGVARCHAR, 2147483647, "character large object");
+	}
+	
+	/**
+	 * H2 2 JDBC metadata uses BOOLEAN, CHARACTER, and CLOB where Hibernate 5 still emits BIT,
+	 * VARCHAR, and LONGVARCHAR. Treat those families as the same during schema validation.
+	 */
+	@Override
+	public boolean equivalentTypes(int typeCode1, int typeCode2) {
+		if (super.equivalentTypes(typeCode1, typeCode2)) {
+			return true;
+		}
+		return isStringLike(typeCode1) && isStringLike(typeCode2) || isBooleanLike(typeCode1) && isBooleanLike(typeCode2)
+		        || isIntegerLike(typeCode1) && isIntegerLike(typeCode2) || isDateLike(typeCode1) && isDateLike(typeCode2);
+	}
+	
+	private static boolean isStringLike(int typeCode) {
+		return typeCode == Types.CHAR || typeCode == Types.VARCHAR || typeCode == Types.LONGVARCHAR || typeCode == Types.CLOB
+		        || typeCode == Types.NCHAR || typeCode == Types.NVARCHAR || typeCode == Types.LONGNVARCHAR
+		        || typeCode == Types.NCLOB;
+	}
+	
+	private static boolean isBooleanLike(int typeCode) {
+		return typeCode == Types.BOOLEAN || typeCode == Types.BIT || typeCode == Types.TINYINT;
+	}
+	
+	private static boolean isIntegerLike(int typeCode) {
+		return typeCode == Types.TINYINT || typeCode == Types.SMALLINT || typeCode == Types.INTEGER
+		        || typeCode == Types.BIGINT;
+	}
+	
+	private static boolean isDateLike(int typeCode) {
+		return typeCode == Types.DATE || typeCode == Types.TIME || typeCode == Types.TIMESTAMP
+		        || typeCode == Types.TIME_WITH_TIMEZONE || typeCode == Types.TIMESTAMP_WITH_TIMEZONE;
 	}
 }
