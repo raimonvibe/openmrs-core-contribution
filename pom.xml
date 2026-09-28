@@ -1111,7 +1111,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.24.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1137,7 +1137,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.24.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1163,7 +1163,7 @@
 					<dependency>
 						<groupId>org.mockito</groupId>
 						<artifactId>mockito-core</artifactId>
-						<version>5.6.0</version>
+						<version>5.24.0</version>
 					</dependency>
 					<dependency>
 						<groupId>net.bytebuddy</groupId>
@@ -1262,7 +1262,7 @@
 		<!-- jackson-annotations is only re-released when it changes, so it trails jacksonVersion -->
 		<jacksonAnnotationsVersion>2.22</jacksonAnnotationsVersion>
 		<junitVersion>5.14.4</junitVersion>
-		<mockitoVersion>3.12.4</mockitoVersion>
+		<mockitoVersion>5.24.0</mockitoVersion>
 		<hamcrestVersion>3.0</hamcrestVersion>
 
 		<slf4jVersion>1.7.36</slf4jVersion>
