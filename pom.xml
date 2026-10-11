@@ -1258,7 +1258,7 @@
 		<!-- ininispanVersion needs to be adjusted if hibernateVersion changes -->
 		<infinispanVersion>13.0.22.Final</infinispanVersion>
 		<aspectjVersion>1.9.25.1</aspectjVersion>
-		<jacksonVersion>2.22.2</jacksonVersion>
+		<jacksonVersion>2.22.3</jacksonVersion>
 		<!-- jackson-annotations is only re-released when it changes, so it trails jacksonVersion -->
 		<jacksonAnnotationsVersion>2.22</jacksonAnnotationsVersion>
 		<junitVersion>5.14.4</junitVersion>
