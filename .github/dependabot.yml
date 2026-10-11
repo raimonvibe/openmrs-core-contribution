@@ -12,6 +12,10 @@ updates:
     commit-message:
       prefix: "github-actions"
       include: "scope"
+    groups:
+      codeql-action: # init/autobuild/analyze must move together or the Analyze jobs fail
+        patterns:
+          - "github/codeql-action*"
     ignore:
       - dependency-name: "actions/setup-java" # v6 removes the adopt distribution used by build-2.x.yaml
         versions:
@@ -96,4 +100,12 @@ updates:
       - dependency-name: "com.h2database:h2" # H2 2.x is a breaking engine major; OpenMRS core stays on 1.4.x
         versions:
           - ">= 2.0"
-
+      - dependency-name: "hibernateVersion" # Hibernate 6/7 is a full ORM migration and needs Java 11+; this fork builds on Java 8
+        versions:
+          - ">= 6.0"
+      - dependency-name: "mockitoVersion" # Mockito 5 requires Java 11; this fork still builds on Java 8
+        versions:
+          - ">= 5.0"
+      - dependency-name: "slf4jVersion" # SLF4J 2 changes the binding mechanism and breaks the log4j bridge setup
+        versions:
+          - ">= 2.0"
